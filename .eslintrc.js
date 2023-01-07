@@ -12,6 +12,6 @@ module.exports = {
   },
   "ignorePatterns": [".eslintrc.js"],
   "rules": {
-    "no-underscore-dangle": ["error", { "allow": ["_id"] }]
+    "no-underscore-dangle": ["error", { "allow": ["_id"] }],
   }
 }
