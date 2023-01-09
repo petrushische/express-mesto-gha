@@ -8,7 +8,7 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.getUsersId = (req, res) => {
   userSchema.findById(req.params.userId)
-    .then((user) => res.status(200).send(user))
+    .then((user) => { res.status(200).send(user) })
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
