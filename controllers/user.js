@@ -13,6 +13,7 @@ module.exports.getUsersId = (req, res) => {
 };
 
 module.exports.createUser = (req, res) => {
+  console.log(req.user._id);
   const { name, about, avatar } = req.body;
   userSchema.create({ name, about, avatar })
     .then((user) => res.status(200).send(user))
