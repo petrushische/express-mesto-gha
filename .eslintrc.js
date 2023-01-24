@@ -13,5 +13,6 @@ module.exports = {
   "ignorePatterns": [".eslintrc.js"],
   "rules": {
     "no-underscore-dangle": ["error", { "allow": ["_id"] }],
+    'linebreak-style': ['error', process.platform === 'win32' ? 'windows' : 'unix'],
   }
 }
