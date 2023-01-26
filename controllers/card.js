@@ -18,3 +18,23 @@ module.exports.createCard = (req, res) => {
     .then((card) => res.status(200).send(card))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
+
+module.exports.likeCard = (req, res) => {
+  cardSchema.findByIdAndUpdate(
+    req.params.cardId,
+    { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+    { new: true },
+  )
+    .then((card) => res.status(200).send(card))
+    .catch((err) => res.status(500).send({ message: err.message }));
+};
+
+module.exports.dislikeCard = (req, res) => {
+  cardSchema.findByIdAndUpdate(
+    req.params.cardId,
+    { $pull: { likes: req.user._id } }, // убрать _id из массива
+    { new: true },
+  )
+    .then((card) => res.status(200).send(card))
+    .catch((err) => res.status(500).send({ message: err.message }));
+};
