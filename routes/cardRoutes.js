@@ -8,7 +8,7 @@ const {
 
 router.get('/cards', getCards);
 
-router.get('/cards/:cardId', getCardsId);
+router.delete('/cards/:cardId', getCardsId);
 
 router.post('/cards', express.json(), createCard);
 

@@ -8,10 +8,21 @@ module.exports.getCards = (req, res) => {
 };
 
 module.exports.getCardsId = (req, res) => {
-  cardSchema.findById(req.params.cardId)
+  cardSchema.findByIdAndRemove(req.params.cardId)
     .populate(['owner'])
-    .then((card) => { res.status(200).send(card); })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .then((card) => {
+      if (!card) {
+        throw new Error('not found');
+      }
+      res.status(200).send(card);
+    })
+    .catch((err) => {
+      if (err.message === 'not found') {
+        res.status(404).send({ message: 'Такй карточки не существует' });
+      } else {
+        res.status(500).send({ message: err.message });
+      }
+    });
 };
 
 module.exports.createCard = (req, res) => {
@@ -19,7 +30,13 @@ module.exports.createCard = (req, res) => {
   cardSchema.create({ name, link, owner: req.user._id })
     .then((card) => card.populate('owner'))
     .then((card) => res.status(200).send(card))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Ошибка валидации полей', ...err });
+      } else {
+        res.status(500).send({ message: 'Произошла неизвестная ошибка, проверьте правильность запроса' });
+      }
+    });
 };
 
 module.exports.likeCard = (req, res) => {
@@ -29,8 +46,21 @@ module.exports.likeCard = (req, res) => {
     { new: true },
   )
     .populate(['owner', 'likes'])
-    .then((card) => res.status(200).send(card))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .then((card) => {
+      if (!card) {
+        throw new Error('not found');
+      }
+      res.status(200).send(card);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Неверный id, проверьте и введите еще раз' });
+      } else if (err.message === 'not found') {
+        res.status(404).send({ message: 'Такого пользователя не существует' });
+      } else {
+        res.status(500).send({ message: 'Произошла неизвестная ошибка, проверьте правильность запроса' });
+      }
+    });
 };
 
 module.exports.dislikeCard = (req, res) => {
@@ -40,6 +70,19 @@ module.exports.dislikeCard = (req, res) => {
     { new: true },
   )
     .populate(['owner'])
-    .then((card) => res.status(200).send(card))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .then((card) => {
+      if (!card) {
+        throw new Error('not found');
+      }
+      res.status(200).send(card);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Неверный id, проверьте и введите еще раз' });
+      } else if (err.message === 'not found') {
+        res.status(404).send({ message: 'Такого пользователя не существует' });
+      } else {
+        res.status(500).send({ message: 'Произошла неизвестная ошибка, проверьте правильность запроса' });
+      }
+    });
 };
