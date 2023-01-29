@@ -24,4 +24,6 @@ app.use(cardRouter);
 
 mongoose.set('strictQuery', false);
 mongoose.connect(MONGO_URL, {});
-app.listen(PORT);
+app.listen(PORT, () => {
+  console.log(`Успешное плдключение по ${PORT} порту`);
+});
