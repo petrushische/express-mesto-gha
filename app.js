@@ -22,12 +22,8 @@ app.use(userRouter);
 
 app.use(cardRouter);
 
-async function connect() {
-  mongoose.set('strictQuery', false);
-  await mongoose.connect(MONGO_URL, {});
-  console.log(`Подключились к MongoDB ${MONGO_URL}`);
-  await app.listen(PORT);
-  console.log(`Успешное подключение, порт ${PORT}`);
-}
-
-connect();
+mongoose.set('strictQuery', false);
+mongoose.connect(MONGO_URL, {});
+console.log(`Подключились к MongoDB ${MONGO_URL}`);
+app.listen(PORT);
+console.log(`Успешное подключение, порт ${PORT}`);
