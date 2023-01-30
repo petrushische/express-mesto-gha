@@ -17,7 +17,9 @@ module.exports.getCardsId = (req, res) => {
       res.status(200).send(card);
     })
     .catch((err) => {
-      if (err.message === 'not found') {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Неверный id, проверьте и введите еще раз' });
+      } else if (err.message === 'not found') {
         res.status(404).send({ message: 'Такй карточки не существует' });
       } else {
         res.status(500).send({ message: err.message });
