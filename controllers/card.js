@@ -4,7 +4,8 @@ module.exports.getCards = (req, res) => {
   cardSchema.find({})
     .populate(['owner'])
     .then((card) => res.status(200).send(card))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    // eslint-disable-next-line no-unused-vars
+    .catch((err) => res.status(500).send({ message: 'На сервере произошла ошибка' }));
 };
 
 module.exports.getCardsId = (req, res) => {
@@ -22,7 +23,7 @@ module.exports.getCardsId = (req, res) => {
       } else if (err.message === 'not found') {
         res.status(404).send({ message: 'Такй карточки не существует' });
       } else {
-        res.status(500).send({ message: err.message });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     });
 };
@@ -36,7 +37,7 @@ module.exports.createCard = (req, res) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Ошибка валидации полей', ...err });
       } else {
-        res.status(500).send({ message: 'Произошла неизвестная ошибка, проверьте правильность запроса' });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     });
 };
@@ -60,7 +61,7 @@ module.exports.likeCard = (req, res) => {
       } else if (err.message === 'not found') {
         res.status(404).send({ message: 'Такого пользователя не существует' });
       } else {
-        res.status(500).send({ message: 'Произошла неизвестная ошибка, проверьте правильность запроса' });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     });
 };
@@ -84,7 +85,7 @@ module.exports.dislikeCard = (req, res) => {
       } else if (err.message === 'not found') {
         res.status(404).send({ message: 'Такого пользователя не существует' });
       } else {
-        res.status(500).send({ message: 'Произошла неизвестная ошибка, проверьте правильность запроса' });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     });
 };

@@ -12,7 +12,7 @@
     "type": "git",
     "url": "git+https://github.com/petrushische/express-mesto-gha.git"
   },
-  "author": "",
+  "author": "Petr Rumyantsev",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/petrushische/express-mesto-gha/issues"

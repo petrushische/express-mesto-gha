@@ -3,7 +3,8 @@ const userSchema = require('../models/user');
 module.exports.getUsers = (req, res) => {
   userSchema.find({})
     .then((user) => res.status(200).send(user))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    // eslint-disable-next-line no-unused-vars
+    .catch((err) => res.status(500).send({ message: 'На сервере произошла ошибка' }));
 };
 
 module.exports.getUsersId = (req, res) => {
@@ -20,7 +21,7 @@ module.exports.getUsersId = (req, res) => {
       } else if (err.name === 'CastError') {
         res.status(400).send({ message: 'Неверный id, проверьте и введите еще раз' });
       } else {
-        res.status(500).send({ message: 'Произошла неизвестная ошибка, проверьте правильность запроса' });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     });
 };
@@ -33,7 +34,7 @@ module.exports.createUser = (req, res) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Ошибка валидации полей', ...err });
       } else {
-        res.status(500).send({ message: 'Произошла неизвестная ошибка, проверьте правильность запроса' });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     });
 };
@@ -56,7 +57,7 @@ module.exports.updateUserInfo = (req, res) => {
       } else if (err.message === 'not found') {
         res.status(404).send({ message: 'Такого пользователя не существует' });
       } else {
-        res.status(500).send({ message: 'Произошла неизвестная ошибка, проверьте правильность запроса' });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     });
 };
@@ -79,7 +80,7 @@ module.exports.updateUserAvatar = (req, res) => {
       } else if (err.message === 'not found') {
         res.status(404).send({ message: 'Такого пользователя не существует' });
       } else {
-        res.status(500).send({ message: 'Произошла неизвестная ошибка, проверьте правильность запроса' });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     });
 };
