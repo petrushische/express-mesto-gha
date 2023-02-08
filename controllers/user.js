@@ -1,3 +1,6 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+const bcryptjs = require('bcryptjs');
+
 const userSchema = require('../models/user');
 
 module.exports.getUsers = (req, res) => {
@@ -27,15 +30,25 @@ module.exports.getUsersId = (req, res) => {
 };
 
 module.exports.createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  userSchema.create({ name, about, avatar })
-    .then((user) => res.status(200).send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Ошибка валидации полей', ...err });
-      } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
-      }
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
+  bcryptjs.hash(password, 10)
+    .then((hash) => {
+      userSchema.create({
+        name, about, avatar, email, password: hash,
+      })
+        .then((user) => res.status(200).send(user))
+        .catch((err) => {
+          if (err.name === 'ValidationError') {
+            res.status(400).send({ message: 'Ошибка валидации полей', ...err });
+          } else {
+            res.status(500).send({ message: 'На сервере произошла ошибка' });
+          }
+        })
+        .catch((err) => {
+          res.status(400).send(err);
+        });
     });
 };
 
