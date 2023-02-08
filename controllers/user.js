@@ -1,6 +1,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const bcryptjs = require('bcryptjs');
 
+// eslint-disable-next-line import/no-extraneous-dependencies
+const jwt = require('jsonwebtoken');
+
 const userSchema = require('../models/user');
 
 module.exports.getUsers = (req, res) => {
@@ -95,5 +98,19 @@ module.exports.updateUserAvatar = (req, res) => {
       } else {
         res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
+    });
+};
+
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+
+  return userSchema.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+
+      res.send({ token });
+    })
+    .catch((err) => {
+      res.status(401).send({ message: err.message });
     });
 };
