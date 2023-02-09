@@ -106,11 +106,25 @@ module.exports.login = (req, res) => {
 
   return userSchema.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id }, 'secret', { expiresIn: '7d' });
 
       res.send({ token });
     })
     .catch((err) => {
       res.status(401).send({ message: err.message });
+    });
+};
+
+module.exports.usersMe = (req, res) => {
+  userSchema.findById(req.user._id)
+    .then((user) => {
+      res.status(200).send(user);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Неверный адресс' });
+      } else {
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
+      }
     });
 };
