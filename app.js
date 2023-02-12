@@ -65,7 +65,7 @@ app.use((err, req, res, next) => {
   } else if (err.message === 'Такой пользователь уже существует') {
     res.status(409).send({ message: err.message });
   } else if (err.message === 'not Prava') {
-    res.send({ message: 'Вы не можете удалить эту карточку, так как не являетесь её создателем' });
+    res.status(403).send({ message: 'Вы не можете удалить эту карточку, так как не являетесь её создателем' });
   } else if (err.message === 'Необходима авторизация') {
     res.status(401).send({ message: err.message });
   } else {
