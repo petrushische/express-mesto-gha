@@ -48,7 +48,10 @@ module.exports.createUser = (req, res, next) => {
       userSchema.create({
         name, about, avatar, email, password: hash,
       })
-        .then((user) => res.status(200).send(user))
+        // eslint-disable-next-line no-unused-vars
+        .then((user) => res.status(200).send({
+          name, about, avatar, email,
+        }))
         .catch(next);
     });
 };

@@ -28,7 +28,7 @@ router.patch('/users/me', express.json(), celebrate({
 
 router.patch('/users/me/avatar', express.json(), celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().min(2),
+    avatar: Joi.string().regex(/^(https?:\/\/)?([\w-]{1,32}\.[\w-]{1,32})[^\s@]*/),
   }),
 }), updateUserAvatar);
 
