@@ -1,5 +1,8 @@
 const express = require('express');
 
+// eslint-disable-next-line import/no-extraneous-dependencies
+const { celebrate, Joi } = require('celebrate');
+
 const router = require('express').Router();
 
 const {
@@ -8,14 +11,35 @@ const {
 
 router.get('/cards', getCards);
 
-router.delete('/cards/:cardId', cancellationDelete);
+router.delete('/cards/:cardId', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().alphanum().length(24),
+  }),
+}), cancellationDelete);
 
-router.delete('/cards/:cardId', getCardsId);
+router.delete('/cards/:cardId', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().alphanum().length(24),
+  }),
+}), getCardsId);
 
-router.post('/cards', express.json(), createCard);
+router.post('/cards', express.json(), celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30).required(),
+    link: Joi.string().required(),
+  }),
+}), createCard);
 
-router.put('/cards/:cardId/likes', likeCard);
+router.put('/cards/:cardId/likes', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().alphanum().length(24),
+  }),
+}), likeCard);
 
-router.delete('/cards/:cardId/likes', dislikeCard);
+router.delete('/cards/:cardId/likes', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().alphanum().length(24),
+  }),
+}), dislikeCard);
 
 module.exports = router;

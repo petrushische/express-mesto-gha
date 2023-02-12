@@ -2,6 +2,9 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+// eslint-disable-next-line import/no-extraneous-dependencies
+const { errors, celebrate, Joi } = require('celebrate');
+
 const express = require('express');
 
 const mongoose = require('mongoose');
@@ -18,15 +21,40 @@ const { PORT = 3000, MONGO_URL = 'mongodb://localhost:27017/mestodb' } = process
 
 const app = express();
 
-app.post('/signin', express.json(), login); // вход
+app.post('/signin', express.json(), celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required(),
+    password: Joi.string().required(),
+  }),
+}), login); // вход
 
-app.post('/signup', express.json(), cancelCreateUser); // проверка email
+app.post('/signup', express.json(), celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required(),
+  }),
+}), cancelCreateUser); // проверка email
 
-app.post('/signup', express.json(), createUser); // авторизация
+app.post('/signup', express.json(), celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().min(2),
+    email: Joi.string().required(),
+    password: Joi.string().required(),
+  }),
+}), createUser); // авторизация
 
-app.use(auth, userRouter);
+app.use(auth);
 
-app.use(auth, cardRouter);
+app.use(userRouter);
+
+app.use(cardRouter);
+
+app.use('*', (req, res) => {
+  res.status(404).send({ message: 'Страница не найдена' });
+});
+
+app.use(errors());
 
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
@@ -49,10 +77,6 @@ app.use((err, req, res, next) => {
   } else {
     res.status(500).send({ message: 'На сервере произошла ошибка' });
   }
-});
-
-app.use('*', (req, res) => {
-  res.status(404).send({ message: 'Страница не найдена' });
 });
 
 mongoose.set('strictQuery', false);
