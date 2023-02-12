@@ -6,14 +6,13 @@ const jwt = require('jsonwebtoken');
 
 const userSchema = require('../models/user');
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   userSchema.find({})
     .then((user) => res.status(200).send(user))
-    // eslint-disable-next-line no-unused-vars
-    .catch((err) => res.status(500).send({ message: 'На сервере произошла ошибка' }));
+    .catch(next);
 };
 
-module.exports.getUsersId = (req, res) => {
+module.exports.getUsersId = (req, res, next) => {
   userSchema.findById(req.params.userId)
     .then((user) => {
       if (!user) {
@@ -21,18 +20,26 @@ module.exports.getUsersId = (req, res) => {
       }
       res.status(200).send(user);
     })
-    .catch((err) => {
-      if (err.message === 'not found') {
-        res.status(404).send({ message: 'Такого пользователя не существует' });
-      } else if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Неверный id, проверьте и введите еще раз' });
-      } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
-      }
-    });
+    .catch(next);
 };
 
-module.exports.createUser = (req, res) => {
+// eslint-disable-next-line no-unused-vars
+module.exports.cancelCreateUser = (req, res, next) => {
+  const {
+    email,
+  } = req.body;
+  userSchema.findOne({ email })
+    .then((user) => {
+      if (!user) {
+        next();
+      } else if (user.email === email) {
+        throw new Error('Такой пользователь уже существует');
+      }
+    })
+    .catch(next);
+};
+
+module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -42,20 +49,11 @@ module.exports.createUser = (req, res) => {
         name, about, avatar, email, password: hash,
       })
         .then((user) => res.status(200).send(user))
-        .catch((err) => {
-          if (err.name === 'ValidationError') {
-            res.status(400).send({ message: 'Ошибка валидации полей', ...err });
-          } else {
-            res.status(500).send({ message: 'На сервере произошла ошибка' });
-          }
-        })
-        .catch((err) => {
-          res.status(400).send(err);
-        });
+        .catch(next);
     });
 };
 
-module.exports.updateUserInfo = (req, res) => {
+module.exports.updateUserInfo = (req, res, next) => {
   const { name, about } = req.body;
   userSchema.findByIdAndUpdate(req.user._id, { name, about }, {
     new: true,
@@ -67,18 +65,10 @@ module.exports.updateUserInfo = (req, res) => {
       }
       res.status(200).send(user);
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Ошибка валидации полей', ...err });
-      } else if (err.message === 'not found') {
-        res.status(404).send({ message: 'Такого пользователя не существует' });
-      } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
-      }
-    });
+    .catch(next);
 };
 
-module.exports.updateUserAvatar = (req, res) => {
+module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   userSchema.findByIdAndUpdate(req.user._id, { avatar }, {
     new: true,
@@ -90,18 +80,10 @@ module.exports.updateUserAvatar = (req, res) => {
       }
       res.status(200).send(user);
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Ошибка валидации полей', ...err });
-      } else if (err.message === 'not found') {
-        res.status(404).send({ message: 'Такого пользователя не существует' });
-      } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
-      }
-    });
+    .catch(next);
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return userSchema.findUserByCredentials(email, password)
@@ -110,21 +92,13 @@ module.exports.login = (req, res) => {
 
       res.send({ token });
     })
-    .catch((err) => {
-      res.status(401).send({ message: err.message });
-    });
+    .catch(next);
 };
 
-module.exports.usersMe = (req, res) => {
+module.exports.usersMe = (req, res, next) => {
   userSchema.findById(req.user._id)
     .then((user) => {
       res.status(200).send(user);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Неверный адресс' });
-      } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
-      }
-    });
+    .catch(next);
 };
