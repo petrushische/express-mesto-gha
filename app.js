@@ -34,8 +34,8 @@ app.post('/signup', express.json(), celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().min(2),
-    email: Joi.string().required(),
+    avatar: Joi.string().regex(/^(https?:\/\/)?([\w-]{1,32}\.[\w-]{1,32})[^\s@]*/),
+    email: Joi.string().email().required(),
     password: Joi.string().required(),
   }),
 }), createUser); // авторизация
