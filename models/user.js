@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
       validator(v) {
         return /^(https?:\/\/)?([\w-]{1,32}\.[\w-]{1,32})[^\s@]*/gm.test(v);
       },
-      message: 'Не валидный адрес ресурса',
+      message: (props) => `${props.value} не валидный адресс`,
     },
   },
   email: {

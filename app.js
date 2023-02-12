@@ -35,7 +35,6 @@ app.post('/signup', express.json(), celebrate({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().min(2),
-    email: Joi.string().required(),
     password: Joi.string().required(),
   }),
 }), createUser); // авторизация
