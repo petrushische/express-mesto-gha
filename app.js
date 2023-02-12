@@ -28,11 +28,7 @@ app.post('/signin', express.json(), celebrate({
   }),
 }), login); // вход
 
-app.post('/signup', express.json(), celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required(),
-  }),
-}), cancelCreateUser); // проверка email
+app.post('/signup', express.json(), cancelCreateUser); // проверка email
 
 app.post('/signup', express.json(), celebrate({
   body: Joi.object().keys({
@@ -44,11 +40,9 @@ app.post('/signup', express.json(), celebrate({
   }),
 }), createUser); // авторизация
 
-app.use(auth);
+app.use(auth, userRouter);
 
-app.use(userRouter);
-
-app.use(cardRouter);
+app.use(auth, cardRouter);
 
 app.use('*', (req, res) => {
   res.status(404).send({ message: 'Страница не найдена' });
