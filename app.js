@@ -61,7 +61,7 @@ app.use((err, req, res, next) => {
   } else if (err.message === 'not found Card') {
     res.status(404).send({ message: 'Такой карточки не существует' });
   } else if (err.message === 'Неправильные почта или пароль') {
-    res.status(400).send({ message: err.message });
+    res.status(401).send({ message: err.message });
   } else if (err.message === 'Такой пользователь уже существует') {
     res.status(409).send({ message: err.message });
   } else if (err.message === 'not Prava') {
