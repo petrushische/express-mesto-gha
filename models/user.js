@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
       validator(v) {
         return /^(https?:\/\/)?([\w-]{1,32}\.[\w-]{1,32})[^\s@]*/gm.test(v);
       },
-      message: (props) => `${props.value} не валидный адресс`,
+      message: 'Ошибка в поле avatar',
     },
   },
   email: {
@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema({
       validator(v) {
         return validator.isEmail(v);
       },
-      message: 'Неверный логин или пароль',
+      message: 'Ошибка в поле email или password',
     },
     unique: true,
   },

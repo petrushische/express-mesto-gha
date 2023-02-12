@@ -35,6 +35,7 @@ app.post('/signup', express.json(), celebrate({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().min(2),
+    email: Joi.string().required(),
     password: Joi.string().required(),
   }),
 }), createUser); // авторизация
@@ -54,7 +55,7 @@ app.use((err, req, res, next) => {
   if (err.name === 'CastError') {
     res.status(400).send({ message: 'Неверный адрес, проверьте и введите еще раз' });
   } else if (err.name === 'ValidationError') {
-    res.status(400).send({ message: 'Ошибка валидации полей' });
+    res.status(400).send({ message: err.message });
   } else if (err.message === 'not found') {
     res.status(404).send({ message: 'Такого пользователя не существует' });
   } else if (err.message === 'not found Card') {
