@@ -50,9 +50,9 @@ app.use(errors());
 
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
-  if (err.message === 'Переданы некорректные данные') { //CastError ошибка адреса
+  if (err.message === 'Переданы некорректные данные') {
     res.status(err.statusCode).send({ message: 'Неверный адрес, проверьте и введите еще раз' });
-  } else if (err.message === 'Ошибка валидации') { //ValidationError ошибка валидации
+  } else if (err.message === 'Ошибка валидации') {
     res.status(err.statusCode).send({ message: 'Ошибка валидации' });
   } else if (err.message === 'not found') {
     res.status(err.statusCode).send({ message: 'Такого пользователя не существует' });
