@@ -1,5 +1,11 @@
 const cardSchema = require('../models/card');
 
+const NotFoundError = require('../errors/NotFoundError');
+
+const BadRequestError = require('../errors/BadRequestError');
+
+const DeleteError = require('../errors/DeleteError');
+
 module.exports.getCards = (req, res, next) => {
   cardSchema.find({})
     .populate(['owner'])
@@ -11,13 +17,19 @@ module.exports.cancellationDelete = (req, res, next) => {
   cardSchema.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        throw new Error('not found Card');
+        throw new NotFoundError('not found Card');
       } else if (req.user._id !== card.owner._id.toHexString()) {
-        throw new Error('not Prava');
+        throw new DeleteError('Вы не можете удалить эту карточку');
       }
       next();
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequestError('Переданы некорректные данные'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.getCardsId = (req, res, next) => {
@@ -25,7 +37,7 @@ module.exports.getCardsId = (req, res, next) => {
     .populate(['owner'])
     .then((card) => {
       if (!card) {
-        throw new Error('not found Card');
+        throw new NotFoundError('not found Card');
       }
       res.status(200).send(card);
     })
@@ -37,7 +49,13 @@ module.exports.createCard = (req, res, next) => {
   cardSchema.create({ name, link, owner: req.user._id })
     .then((card) => card.populate('owner'))
     .then((card) => res.status(200).send(card))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError('Ошибка валидации'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.likeCard = (req, res, next) => {
@@ -49,11 +67,17 @@ module.exports.likeCard = (req, res, next) => {
     .populate(['owner', 'likes'])
     .then((card) => {
       if (!card) {
-        throw new Error('not found Card');
+        throw new NotFoundError('not found Card');
       }
       res.status(200).send(card);
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequestError('Переданы некорректные данные'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.dislikeCard = (req, res, next) => {
@@ -65,9 +89,15 @@ module.exports.dislikeCard = (req, res, next) => {
     .populate(['owner'])
     .then((card) => {
       if (!card) {
-        throw new Error('not found');
+        throw new NotFoundError('not found Card');
       }
       res.status(200).send(card);
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequestError('Переданы некорректные данные'));
+      } else {
+        next(err);
+      }
+    });
 };

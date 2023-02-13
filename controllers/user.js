@@ -4,6 +4,12 @@ const bcryptjs = require('bcryptjs');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const jwt = require('jsonwebtoken');
 
+const NotFoundError = require('../errors/NotFoundError');
+
+const NewConflicktError = require('../errors/ConflickError');
+
+const BadRequestError = require('../errors/BadRequestError');
+
 const userSchema = require('../models/user');
 
 module.exports.getUsers = (req, res, next) => {
@@ -16,27 +22,17 @@ module.exports.getUsersId = (req, res, next) => {
   userSchema.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        throw new Error('not found');
+        throw new NotFoundError('not found');
       }
       res.status(200).send(user);
     })
-    .catch(next);
-};
-
-// eslint-disable-next-line no-unused-vars
-module.exports.cancelCreateUser = (req, res, next) => {
-  const {
-    email,
-  } = req.body;
-  userSchema.findOne({ email })
-    .then((user) => {
-      if (!user) {
-        next();
-      } else if (user.email === email) {
-        throw new Error('Такой пользователь уже существует');
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequestError('Переданы некорректные данные'));
+      } else {
+        next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 module.exports.createUser = (req, res, next) => {
@@ -52,7 +48,15 @@ module.exports.createUser = (req, res, next) => {
         .then((user) => res.status(200).send({
           name, about, avatar, email,
         }))
-        .catch(next);
+        .catch((err) => {
+          if (err.name === 'ValidationError') {
+            next(new BadRequestError('Ошибка валидации'));
+          } else if (err.code === 11000) {
+            next(new NewConflicktError('Пользователь с таким email уже существует'));
+          } else {
+            next(err);
+          }
+        });
     });
 };
 
@@ -64,11 +68,17 @@ module.exports.updateUserInfo = (req, res, next) => {
   })
     .then((user) => {
       if (!user) {
-        throw new Error('not found');
+        throw new NotFoundError('not found');
       }
       res.status(200).send(user);
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError('Ошибка валидации'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.updateUserAvatar = (req, res, next) => {
@@ -79,11 +89,17 @@ module.exports.updateUserAvatar = (req, res, next) => {
   })
     .then((user) => {
       if (!user) {
-        throw new Error('not found');
+        throw new NotFoundError('not found');
       }
       res.status(200).send(user);
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError('Ошибка валидации'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.login = (req, res, next) => {
