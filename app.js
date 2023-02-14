@@ -9,6 +9,8 @@ const express = require('express');
 
 const mongoose = require('mongoose');
 
+const NotFoundError = require('./errors/NotFoundError');
+
 const auth = require('./middlewares/auth');
 
 const userRouter = require('./routes/userRoutes');
@@ -42,18 +44,17 @@ app.use(auth, userRouter);
 
 app.use(auth, cardRouter);
 
-app.use('*', (req, res) => {
-  res.status(404).send({ message: 'Страница не найдена' });
+// eslint-disable-next-line no-unused-vars
+app.use('*', auth, (req, res) => {
+  throw new NotFoundError('page not found');
 });
 
 app.use(errors());
 
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
-  if (err.message === 'Переданы некорректные данные') {
-    res.status(err.statusCode).send({ message: 'Неверный адрес, проверьте и введите еще раз' });
-  } else if (err.message === 'Ошибка валидации') {
-    res.status(err.statusCode).send({ message: 'Ошибка валидации' });
+  if (err.statusCode === 400) {
+    res.status(err.statusCode).send({ message: err.message });
   } else if (err.message === 'not found') {
     res.status(err.statusCode).send({ message: 'Такого пользователя не существует' });
   } else if (err.message === 'not found Card') {
@@ -66,6 +67,8 @@ app.use((err, req, res, next) => {
     res.status(err.statusCode).send({ message: 'Пользователь с таким email уже существует' });
   } else if (err.message === 'Необходима авторизация') {
     res.status(err.statusCode).send({ message: err.message });
+  } else if (err.message === 'page not found') {
+    res.status(err.statusCode).send({ message: 'Страница не найдена' });
   } else {
     res.status(500).send({ message: 'На сервере произошла ошибка' });
   }

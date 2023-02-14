@@ -14,7 +14,7 @@ const cardSchema = new mongoose.Schema({
       validator(v) {
         return /^(https?:\/\/)?([\w-]{1,32}\.[\w-]{1,32})[^\s@]*/gm.test(v);
       },
-      message: 'Ошибка в поле avatar',
+      message: 'Ошибка в поле link',
     },
   },
   owner: {
