@@ -19,7 +19,7 @@ module.exports.cancellationDelete = (req, res, next) => {
       if (!card) {
         throw new NotFoundError('not found Card');
       } else if (req.user._id !== card.owner._id.toHexString()) {
-        throw new DeleteError('Вы не можете удалить эту карточку');
+        throw new DeleteError('Вы не можете удалить эту карточку так как не являетесь её создателем');
       }
       next();
     })

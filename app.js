@@ -55,22 +55,18 @@ app.use(errors());
 app.use((err, req, res, next) => {
   if (err.statusCode === 400) {
     res.status(err.statusCode).send({ message: err.message });
-  } else if (err.message === 'not found') {
-    res.status(err.statusCode).send({ message: 'Такого пользователя не существует' });
-  } else if (err.message === 'not found Card') {
-    res.status(err.statusCode).send({ message: 'Такой карточки не существует' });
-  } else if (err.message === 'Неправильные почта или пароль') {
+  } else if (err.statusCode === 404) {
     res.status(err.statusCode).send({ message: err.message });
-  } else if (err.message === 'Вы не можете удалить эту карточку') {
-    res.status(err.statusCode).send({ message: 'Вы не можете удалить эту карточку, так как не являетесь её создателем' });
-  } else if (err.message === 'Пользователь с таким email уже существует') {
-    res.status(err.statusCode).send({ message: 'Пользователь с таким email уже существует' });
-  } else if (err.message === 'Необходима авторизация') {
+  } else if (err.statusCode === 401) {
     res.status(err.statusCode).send({ message: err.message });
-  } else if (err.message === 'page not found') {
-    res.status(err.statusCode).send({ message: 'Страница не найдена' });
+  } else if (err.statusCode === 403) {
+    res.status(err.statusCode).send({ message: err.message });
+  } else if (err.statusCode === 409) {
+    res.status(err.statusCode).send({ message: err.message });
   } else {
-    res.status(500).send({ message: 'На сервере произошла ошибка' });
+    const { statusCode = 500 } = err;
+    const message = 'Ошибка на стороне сервера';
+    res.status(statusCode).send({ message });
   }
 });
 

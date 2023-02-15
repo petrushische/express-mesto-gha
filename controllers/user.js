@@ -22,7 +22,7 @@ module.exports.getUsersId = (req, res, next) => {
   userSchema.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('not found');
+        throw new NotFoundError('not found user');
       }
       res.status(200).send(user);
     })
@@ -68,7 +68,7 @@ module.exports.updateUserInfo = (req, res, next) => {
   })
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('not found');
+        throw new NotFoundError('not found user');
       }
       res.status(200).send(user);
     })
@@ -89,7 +89,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
   })
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('not found');
+        throw new NotFoundError('not found user');
       }
       res.status(200).send(user);
     })
