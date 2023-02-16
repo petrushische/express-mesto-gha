@@ -53,21 +53,9 @@ app.use(errors());
 
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
-  if (err.statusCode === 400) {
-    res.status(err.statusCode).send({ message: err.message });
-  } else if (err.statusCode === 404) {
-    res.status(err.statusCode).send({ message: err.message });
-  } else if (err.statusCode === 401) {
-    res.status(err.statusCode).send({ message: err.message });
-  } else if (err.statusCode === 403) {
-    res.status(err.statusCode).send({ message: err.message });
-  } else if (err.statusCode === 409) {
-    res.status(err.statusCode).send({ message: err.message });
-  } else {
-    const { statusCode = 500 } = err;
-    const message = 'Ошибка на стороне сервера';
-    res.status(statusCode).send({ message });
-  }
+  const { statusCode = 500 } = err;
+  const message = statusCode === 500 ? 'На сервере произошла ошибка' : err.message;
+  res.status(statusCode).send({ message });
 });
 
 mongoose.set('strictQuery', false);
